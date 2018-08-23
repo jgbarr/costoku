@@ -6,8 +6,8 @@ var generate = require('csv-generate');
 const Heroku = require('heroku-client')
 const heroku = new Heroku({ token: process.env.HEROKU_API_TOKEN })
 var dt = new Date();
-//var year = dt.getFullYear();
-//ar month = dt.getMonth();
+var year = dt.getFullYear();
+var month = dt.getMonth();
 
 clear();
 console.log(
@@ -23,8 +23,6 @@ N.B - this should probably return 0 as of Oct 2017
 */
 heroku.get('/apps').then(invoices => {
   invoices.forEach(function(invoice) {
-    if (invoice.period_end == endDate) {
-    }
   });
 })
 
@@ -49,17 +47,16 @@ then loop through the invoices
 */
 heroku.get('/organizations').then(orgs => {
   orgs.forEach(function(org) {
-    console.log(orgs);
-    heroku.get(`/organizations/${org.name}/invoices`).then(invoice => {
+    heroku.get(`/organizations/${org.name}/invoices`).then(invoices => {
       invoices.forEach(function(invoice) {
         if (invoice.period_end == endDate) {
           //add decimal 2 places to the left of the end of the 'total' string
           output =  (invoice.total / 100).toFixed(2);
+          //add org.name and output to array
           returnedArray.push([org.name,output])
           returnedArray.sort();
           returnedArray.toString();
           
-          console.log("inv tot:" + invoice.total);
           console.log(returnedArray)
         }
       })
